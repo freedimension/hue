@@ -363,5 +363,6 @@ class light
 		$sPath = "lights/{$this->iLightID}/state";
 		$this->oRest->put($sPath, $this->hChanged);
 		$this->hState = array_merge($this->hState, $this->hChanged);
+		$this->hChanged = [];
 	}
 }
