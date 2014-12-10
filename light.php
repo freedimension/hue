@@ -350,6 +350,11 @@ class light
 					$this->hProperties[$sKey] = $mValue;
 			}
 		}
+		# also list the default transitiontime
+		if ( !isset( $this->hState['transitiontime'] ) )
+		{
+			$this->hState['transitiontime'] = 400;
+		}
 	}
 
 	public function toggle ()
@@ -358,9 +363,24 @@ class light
 		$this->write();
 	}
 
+	public function transition ($iTime = null)
+	{
+		if ( null === $iTime )
+		{
+			return $this->hState['transitiontime'];
+		}
+		else
+		{
+			$iOldTime = $this->hState['transitiontime'];
+			$this->hState['transitiontime'] = $iTime;
+			return $iOldTime;
+		}
+	}
+
 	public function write ()
 	{
 		$sPath = "lights/{$this->iLightID}/state";
+		$this->hChanged['transitiontime'] = $this->hState['transitiontime'];
 		$this->oRest->put($sPath, $this->hChanged);
 		$this->hState = array_merge($this->hState, $this->hChanged);
 		$this->hChanged = [];
