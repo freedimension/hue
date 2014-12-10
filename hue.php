@@ -3,6 +3,8 @@ namespace freedimension\hue;
 
 use freedimension\rest\rest;
 
+require_once "light.php";
+
 /**
  * Class hue
  * @package freedimension\hue
@@ -12,12 +14,11 @@ class hue
 	protected $sHost       = "";
 	protected $sUsername   = "";
 	protected $sDeviceType = "";
-	protected $hStash      = [];
-	protected $hHash       = [];
 	protected $oRest       = null;
+	protected $hLights     = [];
 
 	public function __construct (
-		$oRest,
+		rest $oRest,
 		$sHost,
 		$sUsername,
 		$sDeviceType
@@ -29,52 +30,13 @@ class hue
 		$this->sDeviceType = $sDeviceType;
 	}
 
-	public function stash (
-		$iLight = 1,
-		$sSlot = "default"
-	){
-		$this->hStash["light"][$iLight][$sSlot] = $this->getLight($iLight);
-		$sHash = "#" . md5($iLight . "|" . $sSlot);
-		$this->hHash[$sHash] = [
-			"type" => "light",
-			"id"   => $iLight,
-			"slot" => $sSlot
-		];
-	}
-
-	public function stashPop (
-		$mId = 1,
-		$sKey = "default"
-	){
-		$sType = "light";
-		if ( "#" === substr($mId, 0, 1) )
-		{
-		}
-	}
-
-	public function blink ($iLight = 1)
+	public function light ($iLightID)
 	{
-		$this->Light($iLight, ["alert" => "select"]);
-	}
-
-	public function Light (
-		$iLight,
-		$mState = null
-	){
-		if ( null === $mState )
+		if ( !isset( $this->hLights[$iLightID] ) )
 		{
-			$sPath = "lights/{$iLight}";
-			return $this->oRest->get($sPath);
+			$this->hLights[$iLightID] = new light($iLightID, $this->oRest);
 		}
-		else
-		{
-			if ( is_array($mState) )
-			{
-				$mState = json_encode($mState);
-			}
-			$sPath = "lights/{$iLight}/state";
-			return $this->oRest->put($mState, $sPath);
-		}
+		return $this->hLights[$iLightID];
 	}
 }
 
