@@ -56,9 +56,11 @@ class light
 	{
 		if ( '#' === substr($sColor, 0, 1) )
 		{
-			$hHsl = $this->hex2hsl($sColor);
+			$hHsl = $this->hex2hsl(substr($sColor, 1));
 		}
 		$this->hChanged['hue'] = $hHsl['hue'];
+		$this->hChanged['sat'] = $hHsl['sat'];
+		$this->hChanged['bri'] = $hHsl['bri'];
 		return $this;
 	}
 
