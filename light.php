@@ -153,6 +153,8 @@ class light
 		'yellow'               => "ffff00",
 		'yellowgreen'          => "9acd32",
 	];
+	protected $fLastWrite  = 0.0;
+	protected $fTiming     = 0.1;
 
 	public function __construct (
 		$iLightID,
@@ -357,6 +359,21 @@ class light
 		}
 	}
 
+	public function timing ($fTiming)
+	{
+		if ( null === $fTiming )
+		{
+			return $this->fTiming;
+		}
+		else
+		{
+			$fTiming = max(0.1, $fTiming);
+			$fOldTiming = $this->fTiming;
+			$this->fTiming = $fTiming;
+			return $fOldTiming;
+		}
+	}
+
 	public function toggle ()
 	{
 		$this->hChanged['on'] = !$this->state('on');
@@ -379,6 +396,14 @@ class light
 
 	public function write ()
 	{
+		$fNow = microtime(true);
+		$fDiff = $fNow - $this->fLastWrite;
+		if ( $this->fTiming > $fDiff )
+		{
+			usleep(( $this->fTiming - $fDiff ) * 1000000);
+		}
+		$this->fLastWrite = microtime(true);
+
 		$sPath = "lights/{$this->iLightID}/state";
 		$this->hChanged['transitiontime'] = $this->hState['transitiontime'];
 		$this->oRest->put($sPath, $this->hChanged);
