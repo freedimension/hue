@@ -380,16 +380,16 @@ class light
 		$this->write();
 	}
 
-	public function transition ($iTime = null)
+	public function transition ($iTransitiontime = null)
 	{
-		if ( null === $iTime )
+		if ( null === $iTransitiontime )
 		{
 			return $this->hState['transitiontime'];
 		}
 		else
 		{
 			$iOldTime = $this->hState['transitiontime'];
-			$this->hState['transitiontime'] = $iTime;
+			$this->hState['transitiontime'] = $iTransitiontime;
 			return $iOldTime;
 		}
 	}
