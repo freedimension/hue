@@ -54,6 +54,19 @@ class light
 		$this->write();
 	}
 
+	public function breathe ($bBreath = true)
+	{
+		if ( $bBreath )
+		{
+			$this->hChanged['alert'] = "lselect";
+		}
+		else
+		{
+			$this->hChanged['alert'] = "none";
+		}
+		$this->write();
+	}
+
 	public function color ($sColor)
 	{
 		$oColor = new color($sColor);
@@ -123,6 +136,12 @@ class light
 			$this->hChanged[$sKey] = $mValue;
 			return $this;
 		}
+	}
+
+	public function stop ()
+	{
+		$this->hChanged['alert'] = "none";
+		$this->write();
 	}
 
 	public function sync ()
