@@ -4,6 +4,7 @@ namespace freedimension\hue;
 use freedimension\rest\rest;
 
 require_once "light.php";
+require_once "color.php";
 
 /**
  * Class hue
