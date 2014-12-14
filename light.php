@@ -109,7 +109,7 @@ class light
 
 	public function off ()
 	{
-		$this->hChanged['on'] = false;
+		$this->hChanged['off'] = false;
 		$this->write();
 	}
 
