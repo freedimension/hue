@@ -30,6 +30,10 @@ class hue
 		$this->sDeviceType = $sDeviceType;
 	}
 
+	/**
+	 * @param $iLightID
+	 * @return light
+	 */
 	public function light ($iLightID)
 	{
 		if ( !isset( $this->hLights[$iLightID] ) )
