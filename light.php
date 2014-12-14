@@ -227,6 +227,10 @@ class light
 
 		$sPath = "lights/{$this->iLightID}/state";
 		$this->hChanged['transitiontime'] = $this->hState['transitiontime'];
+		if ( !$this->hState['on'] && !isset( $this->hChanged['on'] ) )
+		{
+			$this->hChanged['on'] = true;
+		}
 		$this->oRest->put($sPath, $this->hChanged);
 		$this->hState = array_merge($this->hState, $this->hChanged);
 		$this->hChanged = [];
