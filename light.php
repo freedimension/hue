@@ -54,9 +54,9 @@ class light
 		$this->write();
 	}
 
-	public function breathe ($bBreath = true)
+	public function breathe ($bBreathe = true)
 	{
-		if ( $bBreath )
+		if ( $bBreathe )
 		{
 			$this->hChanged['alert'] = "lselect";
 		}
