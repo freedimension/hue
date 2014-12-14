@@ -109,7 +109,7 @@ class light
 
 	public function off ()
 	{
-		$this->hChanged['off'] = false;
+		$this->hChanged['on'] = false;
 		$this->write();
 	}
 
@@ -176,7 +176,7 @@ class light
 		# also list the default transitiontime
 		if ( !isset( $this->hState['transitiontime'] ) )
 		{
-			$this->hState['transitiontime'] = 400;
+			$this->hState['transitiontime'] = 4;
 		}
 	}
 
