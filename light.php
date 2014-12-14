@@ -77,6 +77,19 @@ class light
 		return $this;
 	}
 
+	public function loop ($bLoop = true)
+	{
+		if ( $bLoop )
+		{
+			$this->hChanged['effect'] = "colorloop";
+		}
+		else
+		{
+			$this->hChanged['effect'] = "none";
+		}
+		$this->write();
+	}
+
 	public function name ($sName = null)
 	{
 		if ( null === $sName )
@@ -141,6 +154,7 @@ class light
 	public function stop ()
 	{
 		$this->hChanged['alert'] = "none";
+		$this->hChanged['effect'] = "none";
 		$this->write();
 	}
 
