@@ -15,16 +15,42 @@ class light
 	protected $fTiming     = 0.1;
 
 	public function __construct (
-		$iLightID,
+		$mLight,
 		rest $oRest
 	){
-		$this->iLightID = $iLightID;
 		$this->oRest = $oRest;
-		$this->sync();
+		if ( is_array($mLight) )
+		{
+			$this->iLightID = $mLight['_id'];
+			$this->setArray($mLight);
+		}
+		else
+		{
+			$this->iLightID = $mLight;
+			$this->sync();
+		}
 	}
 
 	public function __get ($sKey)
 	{
+		if ( 'uid' === $sKey )
+		{
+			$sKey = 'uniqueid';
+		}
+		if ( in_array($sKey,
+			[
+				'modelid',
+				'name',
+				'pointsymbol',
+				'swversion',
+				'type',
+				'uniqueid',
+			]
+		) )
+		{
+			return $this->hProperties[$sKey];
+		}
+
 		if ( isset( $this->hChanged[$sKey] ) )
 		{
 			return $this->hChanged[$sKey];
@@ -162,22 +188,7 @@ class light
 	{
 		$sPath = "lights/{$this->iLightID}";
 		$hResponse = json_decode($this->oRest->get($sPath), true);
-		foreach ($hResponse as $sKey => $mValue)
-		{
-			switch ($sKey)
-			{
-				case "state":
-					$this->hState = $mValue;
-					break;
-				default;
-					$this->hProperties[$sKey] = $mValue;
-			}
-		}
-		# also list the default transitiontime
-		if ( !isset( $this->hState['transitiontime'] ) )
-		{
-			$this->hState['transitiontime'] = 4;
-		}
+		$this->setArray($hResponse);
 	}
 
 	public function timing ($fTiming)
@@ -234,5 +245,28 @@ class light
 		$this->oRest->put($sPath, $this->hChanged);
 		$this->hState = array_merge($this->hState, $this->hChanged);
 		$this->hChanged = [];
+	}
+
+	/**
+	 * @param $hProperties
+	 */
+	protected function setArray ($hProperties)
+	{
+		foreach ($hProperties as $sKey => $mValue)
+		{
+			switch ($sKey)
+			{
+				case "state":
+					$this->hState = $mValue;
+					break;
+				default;
+					$this->hProperties[$sKey] = $mValue;
+			}
+		}
+		# also list the default transitiontime
+		if ( !isset( $this->hState['transitiontime'] ) )
+		{
+			$this->hState['transitiontime'] = 4;
+		}
 	}
 }

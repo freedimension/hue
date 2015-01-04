@@ -17,6 +17,8 @@ class hue
 	protected $sDeviceType = "";
 	protected $oRest       = null;
 	protected $hLights     = [];
+	protected $hUidMap     = [];
+	protected $hNameMap    = [];
 
 	public function __construct (
 		rest $oRest,
@@ -31,17 +33,54 @@ class hue
 		$this->sDeviceType = $sDeviceType;
 	}
 
+	public function getAllLights ()
+	{
+		$sPath = "lights";
+		$hResponse = json_decode($this->oRest->get($sPath), true);
+		foreach ($hResponse as $sKey => $hLight)
+		{
+			$hLight['_id'] = $sKey;
+			$oLight = new light($hLight, $this->oRest);
+			$this->hLights[$sKey] = $oLight;
+			$this->hNameMap[$oLight->name] = $sKey;
+			$this->hUidMap[$oLight->uid] = $sKey;
+		}
+	}
+
 	/**
-	 * @param $iLightID
+	 * @param $mLightId
 	 * @return light
 	 */
-	public function light ($iLightID)
+	public function light ($mLightId)
 	{
-		if ( !isset( $this->hLights[$iLightID] ) )
+		if ( filter_var($mLightId, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) )
 		{
-			$this->hLights[$iLightID] = new light($iLightID, $this->oRest);
+			if ( !isset( $this->hLights[$mLightId] ) )
+			{
+				$oLight = new light($mLightId, $this->oRest);
+				$this->hNameMap[$oLight->name] = $mLightId;
+				$this->hUidMap[$oLight->uid] = $mLightId;
+				$this->hLights[$mLightId] = $oLight;
+			}
 		}
-		return $this->hLights[$iLightID];
+		elseif ( ( false !== strpos($mLightId, ':') ) &&
+			( preg_match('/^([0-9a-f]{2}:){7}[0-9a-f]{2}-[0-9a-f]{2}/i', $mLightId) )
+		)
+		{
+			if ( !isset( $this->hUidMap[$mLightId] ) )
+			{
+				$this->getAllLights();
+			}
+			$mLightId = $this->hUidMap[$mLightId];
+		}
+		else
+		{ // last resort, must be a "search by name"
+			if ( !isset( $this->hNameMap[$mLightId] ) )
+			{
+				$this->getAllLights();
+			}
+			$mLightId = $this->hNameMap[$mLightId];
+		}
+		return $this->hLights[$mLightId];
 	}
 }
-
